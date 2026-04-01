@@ -5,57 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ZiiZiiMoo 烘焙訂購</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,400&family=Noto+Serif+TC:wght@300;400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet" />
 <style>
   /* ── 色票 ── */
   :root {
-    --cream:   #fdf6ee;
-    --warm:    #f5e6d3;
+    --cream:   #ffffff;
+    --warm:    #fff5f5;
     --blush:   #f2c4c4;
     --rose:    #e8a0a0;
     --mauve:   #c97d7d;
-    --brown:   #7a4f3a;
-    --text:    #4a3428;
-    --muted:   #9c7b6e;
-    --white:   #fffcf8;
-    --shadow:  rgba(122,79,58,0.12);
+    --brown:   #b83030;
+    --text:    #3a3a3a;
+    --muted:   #888888;
+    --white:   #ffffff;
+    --shadow:  rgba(0,0,0,0.08);
     --green:   #7dba6a;
+    --red:     #c0392b;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--cream);
-    font-family: 'Noto Serif TC', serif;
+    background: #ffffff;
+    font-family: 'Noto Sans TC', sans-serif;
     color: var(--text);
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  /* ── 背景紋理 ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background-image:
-      radial-gradient(circle at 20% 20%, rgba(242,196,196,0.3) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(245,230,211,0.4) 0%, transparent 50%),
-      radial-gradient(circle at 60% 10%, rgba(253,246,238,0.5) 0%, transparent 40%);
-    pointer-events: none;
-  }
+  /* ── 背景紋理（白底，移除） ── */
 
   /* ── Header ── */
   header {
     position: relative; z-index: 10;
     text-align: center;
-    padding: 3rem 1.5rem 2rem;
-    background: linear-gradient(180deg, var(--warm) 0%, transparent 100%);
+    padding: 2.5rem 1.5rem 1.5rem;
+    background: transparent;
   }
 
   .logo-wrap {
     display: inline-flex; flex-direction: column; align-items: center; gap: 0.4rem;
   }
 
-  .logo-icon { font-size: 2.8rem; line-height: 1; animation: float 3s ease-in-out infinite; }
+  .logo-icon {
+    width: 80px; height: 80px;
+    animation: float 3s ease-in-out infinite;
+  }
+  .logo-icon img { width: 100%; height: 100%; object-fit: contain; }
 
   @keyframes float {
     0%,100% { transform: translateY(0); }
@@ -63,11 +59,11 @@
   }
 
   .logo-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.4rem;
-    font-weight: 500;
-    color: var(--brown);
-    letter-spacing: 0.05em;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--red);
+    letter-spacing: 0.08em;
   }
 
   .logo-sub {
@@ -90,7 +86,7 @@
 
   /* ── Section 標題 ── */
   .section-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Zen Maru Gothic', sans-serif;
     font-size: 1.25rem;
     color: var(--brown);
     margin-bottom: 1.2rem;
@@ -133,7 +129,7 @@
 
   .product-name { font-weight: 600; font-size: 1rem; }
   .product-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
-  .product-price { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--mauve); margin-top: auto; }
+  .product-price { font-family: 'Zen Maru Gothic', sans-serif; font-size: 1.1rem; color: var(--mauve); margin-top: auto; }
 
   /* 數量控制 */
   .qty-control {
@@ -186,7 +182,7 @@
   }
   .cart-total-label { font-size: 0.85rem; color: var(--muted); }
   .cart-total-amount {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Zen Maru Gothic', sans-serif;
     font-size: 1.4rem; color: var(--mauve);
   }
 
@@ -215,7 +211,7 @@
     border: 1.5px solid var(--blush);
     border-radius: 12px;
     padding: 0.7rem 1rem;
-    font-family: 'Noto Serif TC', serif;
+    font-family: 'Noto Sans TC', sans-serif;
     font-size: 0.95rem;
     color: var(--text);
     outline: none;
@@ -251,7 +247,7 @@
     color: var(--white);
     border: none;
     border-radius: 12px;
-    font-family: 'Noto Serif TC', serif;
+    font-family: 'Noto Sans TC', sans-serif;
     font-size: 0.82rem;
     cursor: pointer;
     white-space: nowrap;
@@ -284,7 +280,7 @@
     color: var(--white);
     border: none;
     border-radius: 16px;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Zen Maru Gothic', sans-serif;
     font-size: 1.05rem;
     letter-spacing: 0.1em;
     cursor: pointer;
@@ -304,7 +300,7 @@
   #success-screen.show { display: block; }
   .success-icon { font-size: 4rem; margin-bottom: 1rem; animation: pop 0.4s ease 0.1s both; }
   @keyframes pop { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .success-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--brown); margin-bottom: 0.5rem; }
+  .success-title { font-family: 'Zen Maru Gothic', sans-serif; font-size: 1.6rem; color: var(--brown); margin-bottom: 0.5rem; }
   .success-msg { font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
   .order-id-badge {
     display: inline-block; margin-top: 1.2rem;
@@ -319,7 +315,7 @@
     border: 1.5px solid var(--blush);
     border-radius: 100px;
     color: var(--mauve);
-    font-family: 'Noto Serif TC', serif;
+    font-family: 'Noto Sans TC', sans-serif;
     cursor: pointer;
     font-size: 0.9rem;
     transition: background 0.2s;
@@ -366,12 +362,8 @@
 <!-- Header -->
 <header>
   <div class="logo-wrap">
-    <div class="logo-icon">🐄</div>
+    <div class="logo-icon"><img src="logo.png" alt="ZiiZiiMoo"></div>
     <div class="logo-name">ZiiZiiMoo</div>
-    <div class="logo-sub">Handmade Bakery</div>
-  </div>
-  <div class="deco-line">
-    <span></span><em>✦ 每日手工烘焙 ✦</em><span></span>
   </div>
 </header>
 
