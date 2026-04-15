@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>ZiiZiiMoo 管理後台</title>
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --cream: #FDF6EE;
+  --warm: #F5E6D3;
+  --blush: #F2C4C4;
+  --rose: #E8A0A0;
+  --mauve: #C97D7D;
+  --brown: #7A4F3A;
+  --red: #B8433A;
+  --text: #4A3428;
+  --muted: #9C7B6E;
+  --white: #FFFCF8;
+  --green: #7DBA6A;
+  --shadow: rgba(122, 79, 58, 0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container { max-width: 680px; margin: 0 auto; padding: 1.5rem 1.2rem 3rem; }
+
+/* ── Header ── */
+header {
+  text-align: center;
+  padding: 1.5rem 0 1rem;
+  border-bottom: 1px solid var(--warm);
+  margin-bottom: 1.5rem;
+}
+header h1 {
+  font-size: 1.5rem;
+  color: var(--red);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+header .subtitle {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 0.3rem;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--brown);
+  margin-bottom: 0.8rem;
+}
+
+/* ── Form ── */
+.field { margin-bottom: 0.9rem; }
+.field label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 0.7rem;
+  border: 1.5px solid var(--warm);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--white);
+  transition: border-color 0.3s;
+}
+.field input:focus,
+.field textarea:focus { outline: none; border-color: var(--mauve); }
+.field textarea { resize: vertical; min-height: 60px; }
+
+.field-row {
+  display: flex;
+  gap: 0.5rem;
+}
+.field-row input { flex: 1; }
+
+.field-hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.3rem;
+  line-height: 1.5;
+}
+.field-hint.success { color: var(--green); }
+.field-hint.warn { color: var(--mauve); }
+
+/* ── Button ── */
+.btn {
+  display: inline-block;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--mauve), var(--rose));
+  color: var(--white);
+  width: 100%;
+}
+.btn-primary:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--cream);
+  color: var(--brown);
+  border: 1.5px solid var(--blush);
+}
+.btn-secondary:hover:not(:disabled) { background: var(--warm); }
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.78rem;
+  border-radius: 8px;
+  width: auto;
+}
+.btn-danger {
+  background: #FAD4D4;
+  color: #7A3A3A;
+  border: 1.5px solid #E8A0A0;
+}
+.btn-danger:hover:not(:disabled) { background: #F2BABA; }
+
+.error-msg {
+  background: #FAD4D4;
+  color: #7A3A3A;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  margin-bottom: 0.8rem;
+}
+.success-msg {
+  background: #D6F0D3;
+  color: #3A7A4F;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  margin-bottom: 0.8rem;
+}
+
+.hidden { display: none !important; }
+
+/* ── Product list ── */
+.product-row {
+  display: flex;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  border: 1px solid var(--warm);
+  border-radius: 12px;
+  margin-bottom: 0.6rem;
+  background: var(--white);
+  align-items: center;
+}
+.product-row.unavailable { opacity: 0.55; background: var(--cream); }
+.product-thumb {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--warm);
+  flex-shrink: 0;
+}
+.product-info {
+  flex: 1;
+  min-width: 0;
+}
+.product-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--brown);
+  margin-bottom: 0.1rem;
+  word-break: break-all;
+}
+.product-meta {
+  font-size: 0.75rem;
+  color: var(--muted);
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.product-price { color: var(--mauve); font-weight: 600; }
+.product-tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.product-tag.on { background: #D6F0D3; color: #3A7A4F; }
+.product-tag.off { background: #FAD4D4; color: #7A3A3A; }
+.product-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+/* ── Empty ── */
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+/* ── Loading ── */
+.loading {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--muted);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  display: inline-block;
+  width: 24px; height: 24px;
+  border: 3px solid var(--warm);
+  border-top-color: var(--mauve);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ── Image preview in form ── */
+.img-preview {
+  margin-top: 0.5rem;
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  border: 1px solid var(--warm);
+  background: var(--cream);
+  display: block;
+}
+
+/* ── Modal / form section ── */
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.form-actions .btn { flex: 1; }
+
+/* ── Status bar ── */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.top-bar .logged-in { color: var(--brown); }
+
+@media (max-width: 480px) {
+  .product-row { padding: 0.6rem; gap: 0.6rem; }
+  .product-thumb { width: 48px; height: 48px; }
+  .product-name { font-size: 0.88rem; }
+  .product-meta { font-size: 0.72rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <h1>ZiiZiiMoo 管理後台</h1>
+  <div class="subtitle">商品維護 / 管理員專用</div>
+</header>
+
+<!-- ═══ 登入區塊 ═══ -->
+<section id="loginSection">
+  <div class="card">
+    <div class="card-title">管理者登入</div>
+    <div id="loginError" class="error-msg hidden"></div>
+
+    <div class="field">
+      <label>管理員 Email</label>
+      <div class="field-row">
+        <input type="email" id="adminEmail" placeholder="your@email.com" />
+        <button type="button" class="btn btn-secondary btn-sm" id="btnSendCode">發送驗證碼</button>
+      </div>
+    </div>
+
+    <div class="field hidden" id="codeField">
+      <label>驗證碼</label>
+      <div class="field-row">
+        <input type="text" id="adminCode" maxlength="6" placeholder="6 位數驗證碼" style="letter-spacing: 0.3em; text-align: center;" />
+        <button type="button" class="btn btn-secondary btn-sm" id="btnVerifyLogin">驗證登入</button>
+      </div>
+      <div class="field-hint" id="codeHint"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 主畫面 ═══ -->
+<section id="mainSection" class="hidden">
+  <div class="top-bar">
+    <span>已登入：<span class="logged-in" id="loggedInEmail"></span></span>
+    <button type="button" class="btn btn-sm btn-secondary" id="btnLogout">登出</button>
+  </div>
+
+  <!-- 新增/編輯表單 -->
+  <div class="card">
+    <div class="card-title" id="formTitle">➕ 新增商品</div>
+    <div id="formError" class="error-msg hidden"></div>
+    <div id="formSuccess" class="success-msg hidden"></div>
+
+    <input type="hidden" id="editRowNum" value="" />
+
+    <div class="field">
+      <label>商品名稱 <span style="color:var(--red);">*</span></label>
+      <input type="text" id="productName" placeholder="例：巧克力餅乾" />
+    </div>
+
+    <div class="field">
+      <label>商品描述</label>
+      <textarea id="productDesc" placeholder="例：香濃黑巧克力，手工烘焙"></textarea>
+    </div>
+
+    <div class="field">
+      <label>價格 (NT$) <span style="color:var(--red);">*</span></label>
+      <input type="number" id="productPrice" min="0" placeholder="150" />
+    </div>
+
+    <div class="field">
+      <label>商品圖片網址 (image_url)</label>
+      <input type="text" id="productImg" placeholder="貼上 Google Drive 分享連結，自動轉換" />
+      <div class="field-hint" id="imgHint">
+        可直接貼上 Google Drive 分享連結，系統會自動偵測並轉換
+      </div>
+      <button type="button" class="btn btn-sm btn-secondary" id="btnConvertImg" style="margin-top:0.4rem;">手動轉換此欄網址</button>
+      <img id="imgPreview" class="img-preview hidden" alt="圖片預覽" />
+    </div>
+
+    <div class="field">
+      <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+        <input type="checkbox" id="productAvailable" checked style="width:auto;margin:0;" />
+        <span>商品上架 (顧客可見)</span>
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-primary" id="btnSaveProduct">儲存</button>
+      <button type="button" class="btn btn-secondary hidden" id="btnCancelEdit">取消</button>
+    </div>
+  </div>
+
+  <!-- 商品列表 -->
+  <div class="card">
+    <div class="card-title">商品列表</div>
+    <div id="productListLoading" class="loading"><div class="spinner"></div><div style="margin-top:0.5rem;font-size:0.82rem;">載入中...</div></div>
+    <div id="productListEmpty" class="empty-state hidden">目前沒有任何商品，請使用上方表單新增</div>
+    <div id="productList"></div>
+  </div>
+</section>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+const API_URL = "https://script.google.com/macros/s/AKfycbxoDlyQvRumGXSKM2v_AkzbNGzgLk-55s2OdBv9a8EWTOP6NQuxfTaU9bd178R8mTU/exec";
+// ══════════════════════════════════════════════════════
+
+let adminToken = '';
+let adminEmail = '';
+
+// ── Session 存放於 sessionStorage（關閉分頁失效）──
+function saveSession(email, token) {
+  adminToken = token;
+  adminEmail = email;
+  sessionStorage.setItem('zz_admin_email', email);
+  sessionStorage.setItem('zz_admin_token', token);
+}
+function loadSession() {
+  const email = sessionStorage.getItem('zz_admin_email');
+  const token = sessionStorage.getItem('zz_admin_token');
+  if (email && token) {
+    adminEmail = email;
+    adminToken = token;
+    return true;
+  }
+  return false;
+}
+function clearSession() {
+  adminToken = '';
+  adminEmail = '';
+  sessionStorage.removeItem('zz_admin_email');
+  sessionStorage.removeItem('zz_admin_token');
+}
+
+// ── API ──
+async function api(payload) {
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    return await res.json();
+  } catch (err) {
+    return { error: '連線失敗，請稍後再試' };
+  }
+}
+
+// ── UI helpers ──
+function show(id) { document.getElementById(id).classList.remove('hidden'); }
+function hide(id) { document.getElementById(id).classList.add('hidden'); }
+function setError(id, msg) {
+  const el = document.getElementById(id);
+  if (!msg) { el.classList.add('hidden'); return; }
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+function setSuccess(id, msg) {
+  const el = document.getElementById(id);
+  if (!msg) { el.classList.add('hidden'); return; }
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 3000);
+}
+
+// ══════════════════════════════════════════════════════
+// ── 登入流程 ─────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+document.getElementById('btnSendCode').addEventListener('click', async () => {
+  setError('loginError', '');
+  const email = document.getElementById('adminEmail').value.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    setError('loginError', '請輸入有效的 Email 地址');
+    return;
+  }
+  const btn = document.getElementById('btnSendCode');
+  btn.disabled = true;
+  btn.textContent = '發送中...';
+
+  const data = await api({ action: 'adminSendCode', email });
+  if (data.error) {
+    setError('loginError', data.error);
+    btn.disabled = false;
+    btn.textContent = '發送驗證碼';
+    return;
+  }
+  show('codeField');
+  document.getElementById('codeHint').textContent = '若此 Email 為管理員，驗證碼已寄出（10 分鐘內有效）';
+  document.getElementById('codeHint').className = 'field-hint success';
+
+  // 60 秒倒數
+  let countdown = 60;
+  btn.textContent = countdown + 's';
+  const timer = setInterval(() => {
+    countdown--;
+    btn.textContent = countdown + 's';
+    if (countdown <= 0) {
+      clearInterval(timer);
+      btn.textContent = '重新發送';
+      btn.disabled = false;
+    }
+  }, 1000);
+});
+
+document.getElementById('btnVerifyLogin').addEventListener('click', async () => {
+  setError('loginError', '');
+  const email = document.getElementById('adminEmail').value.trim();
+  const code = document.getElementById('adminCode').value.trim();
+  if (!email || !code) {
+    setError('loginError', '請輸入 Email 和驗證碼');
+    return;
+  }
+  const btn = document.getElementById('btnVerifyLogin');
+  btn.disabled = true;
+  btn.textContent = '驗證中...';
+
+  const data = await api({ action: 'adminVerifyCode', email, code });
+  btn.disabled = false;
+  btn.textContent = '驗證登入';
+  if (data.error || !data.success) {
+    setError('loginError', data.error || '驗證失敗');
+    return;
+  }
+  saveSession(email, data.token);
+  enterMain();
+});
+
+document.getElementById('btnLogout').addEventListener('click', () => {
+  clearSession();
+  location.reload();
+});
+
+// ══════════════════════════════════════════════════════
+// ── 主畫面 ───────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+function enterMain() {
+  hide('loginSection');
+  show('mainSection');
+  document.getElementById('loggedInEmail').textContent = adminEmail;
+  loadProducts();
+}
+
+// ── 載入商品列表 ──
+async function loadProducts() {
+  show('productListLoading');
+  hide('productListEmpty');
+  document.getElementById('productList').innerHTML = '';
+
+  const data = await api({ action: 'adminListProducts', token: adminToken });
+  hide('productListLoading');
+
+  if (data.error) {
+    if (data.error.includes('身份驗證')) {
+      alert('登入已過期，請重新登入');
+      clearSession();
+      location.reload();
+      return;
+    }
+    document.getElementById('productList').innerHTML =
+      `<div class="error-msg">${data.error}</div>`;
+    return;
+  }
+
+  const products = data.products || [];
+  if (products.length === 0) {
+    show('productListEmpty');
+    return;
+  }
+
+  const container = document.getElementById('productList');
+  products.forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'product-row' + (p.available ? '' : ' unavailable');
+    const safeImg = p.image_url ? escapeHtml(p.image_url) : '';
+    const thumb = safeImg
+      ? `<img src="${safeImg}" class="product-thumb" alt="" onerror="this.style.background='var(--warm)';this.removeAttribute('src');">`
+      : `<div class="product-thumb"></div>`;
+    row.innerHTML = `
+      ${thumb}
+      <div class="product-info">
+        <div class="product-name">${escapeHtml(p.name || '')}</div>
+        <div class="product-meta">
+          <span class="product-price">NT$${p.price}</span>
+          <span class="product-tag ${p.available ? 'on' : 'off'}">${p.available ? '上架中' : '已下架'}</span>
+          <span>ID: ${p.id}</span>
+        </div>
+      </div>
+      <div class="product-actions">
+        <button class="btn btn-sm btn-secondary" data-edit>編輯</button>
+        <button class="btn btn-sm btn-danger" data-delete>刪除</button>
+      </div>
+    `;
+    row.querySelector('[data-edit]').addEventListener('click', () => startEdit(p));
+    row.querySelector('[data-delete]').addEventListener('click', () => deleteProduct(p));
+    container.appendChild(row);
+  });
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// ── 開始編輯 ──
+function startEdit(p) {
+  document.getElementById('formTitle').textContent = '✏️ 編輯商品 #' + p.id;
+  document.getElementById('editRowNum').value = p.rowNum;
+  document.getElementById('productName').value = p.name || '';
+  document.getElementById('productDesc').value = p.description || '';
+  document.getElementById('productPrice').value = p.price || '';
+  document.getElementById('productImg').value = p.image_url || '';
+  document.getElementById('productAvailable').checked = !!p.available;
+  show('btnCancelEdit');
+  updateImgPreview();
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('btnCancelEdit').addEventListener('click', resetForm);
+
+function resetForm() {
+  document.getElementById('formTitle').textContent = '➕ 新增商品';
+  document.getElementById('editRowNum').value = '';
+  document.getElementById('productName').value = '';
+  document.getElementById('productDesc').value = '';
+  document.getElementById('productPrice').value = '';
+  document.getElementById('productImg').value = '';
+  document.getElementById('productAvailable').checked = true;
+  hide('btnCancelEdit');
+  hide('imgPreview');
+  setError('formError', '');
+}
+
+// ── 儲存 ──
+document.getElementById('btnSaveProduct').addEventListener('click', async () => {
+  setError('formError', '');
+  const name = document.getElementById('productName').value.trim();
+  const price = document.getElementById('productPrice').value.trim();
+  if (!name) { setError('formError', '請輸入商品名稱'); return; }
+  if (price === '' || isNaN(Number(price))) { setError('formError', '請輸入有效的價格'); return; }
+
+  // 儲存前自動轉換 Drive 網址
+  autoConvertImg();
+
+  const rowNum = document.getElementById('editRowNum').value;
+  const product = {
+    rowNum: rowNum ? Number(rowNum) : null,
+    name,
+    description: document.getElementById('productDesc').value.trim(),
+    price: Number(price),
+    image_url: document.getElementById('productImg').value.trim(),
+    available: document.getElementById('productAvailable').checked
+  };
+
+  const btn = document.getElementById('btnSaveProduct');
+  btn.disabled = true;
+  btn.textContent = '儲存中...';
+
+  const data = await api({ action: 'adminSaveProduct', token: adminToken, product });
+  btn.disabled = false;
+  btn.textContent = '儲存';
+
+  if (data.error) {
+    setError('formError', data.error);
+    if (data.error.includes('身份驗證')) { clearSession(); location.reload(); }
+    return;
+  }
+  setSuccess('formSuccess', rowNum ? '✓ 更新成功' : '✓ 新增成功');
+  resetForm();
+  loadProducts();
+});
+
+// ── 刪除 ──
+async function deleteProduct(p) {
+  if (!confirm(`確定要刪除商品「${p.name}」嗎？\n此操作無法復原。`)) return;
+  const data = await api({ action: 'adminDeleteProduct', token: adminToken, rowNum: p.rowNum });
+  if (data.error) {
+    alert(data.error);
+    if (data.error.includes('身份驗證')) { clearSession(); location.reload(); }
+    return;
+  }
+  loadProducts();
+}
+
+// ══════════════════════════════════════════════════════
+// ── Google Drive 網址自動轉換 ───────────────────────
+// ══════════════════════════════════════════════════════
+function extractDriveId(url) {
+  if (!url) return null;
+  // 支援格式: /file/d/ID/view, ?id=ID, drive.google.com/uc?id=ID 等
+  const m = url.match(/[-\w]{25,}/);
+  return m ? m[0] : null;
+}
+
+function isDriveShareUrl(url) {
+  if (!url) return false;
+  // 已經是 thumbnail 格式就不要再轉換
+  if (url.includes('drive.google.com/thumbnail')) return false;
+  return /drive\.google\.com\/(file\/d\/|open\?|uc\?)/.test(url);
+}
+
+function toThumbnailUrl(id) {
+  return `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
+}
+
+// 自動轉換欄位值
+function autoConvertImg() {
+  const input = document.getElementById('productImg');
+  const val = input.value.trim();
+  if (!val) { updateImgPreview(); return false; }
+  if (isDriveShareUrl(val)) {
+    const id = extractDriveId(val);
+    if (id) {
+      input.value = toThumbnailUrl(id);
+      const hint = document.getElementById('imgHint');
+      hint.textContent = '✓ 已自動轉換 Google Drive 網址';
+      hint.className = 'field-hint success';
+      updateImgPreview();
+      return true;
+    }
+  }
+  updateImgPreview();
+  return false;
+}
+
+// 手動轉換按鈕
+document.getElementById('btnConvertImg').addEventListener('click', () => {
+  const input = document.getElementById('productImg');
+  const val = input.value.trim();
+  if (!val) return;
+  const id = extractDriveId(val);
+  const hint = document.getElementById('imgHint');
+  if (!id) {
+    hint.textContent = '無法從輸入擷取 Drive 檔案 ID';
+    hint.className = 'field-hint warn';
+    return;
+  }
+  input.value = toThumbnailUrl(id);
+  hint.textContent = '✓ 已轉換為圖片網址';
+  hint.className = 'field-hint success';
+  updateImgPreview();
+});
+
+// 輸入時即時偵測
+document.getElementById('productImg').addEventListener('input', () => {
+  // 只在貼上 Drive 分享連結時自動轉換
+  const val = document.getElementById('productImg').value.trim();
+  if (isDriveShareUrl(val)) {
+    autoConvertImg();
+  } else {
+    const hint = document.getElementById('imgHint');
+    hint.textContent = '可直接貼上 Google Drive 分享連結，系統會自動偵測並轉換';
+    hint.className = 'field-hint';
+    updateImgPreview();
+  }
+});
+
+// 圖片預覽
+function updateImgPreview() {
+  const url = document.getElementById('productImg').value.trim();
+  const img = document.getElementById('imgPreview');
+  if (!url) { img.classList.add('hidden'); return; }
+  img.src = url;
+  img.classList.remove('hidden');
+  img.onerror = () => img.classList.add('hidden');
+}
+
+// ── 頁面載入：恢復 session ──
+if (loadSession()) {
+  enterMain();
+}
+</script>
+</body>
+</html>
