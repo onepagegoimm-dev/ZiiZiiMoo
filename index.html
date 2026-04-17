@@ -564,10 +564,38 @@
         <textarea class="form-textarea" id="f-address" placeholder="請填寫完整收件地址（含縣市、鄉鎮、路名、號碼）"></textarea>
       </div>
 
-      <div class="form-group">
-        <label class="form-label" id="date-label">取貨日期 *</label>
-        <input class="form-input" id="f-date" type="date" required />
+      <!-- 宅配：只顯示出貨說明，不讓使用者選日期 -->
+      <div class="form-group" id="delivery-note-group" style="display:none">
+        <label class="form-label">出貨時程</label>
+        <div class="shipping-note" id="delivery-note" style="display:block">
+          📦 預計最快 <strong id="delivery-date"></strong> 出貨，實際送達時間依物流狀況而定。
+        </div>
+      </div>
+
+      <!-- 親取：日期 + 上午/下午 -->
+      <div class="form-group" id="pickup-date-group" style="display:none">
+        <label class="form-label">取貨日期 *</label>
+        <input class="form-input" id="f-date" type="date" />
         <div class="form-hint">最早可選日期為下單後第 2 天</div>
+      </div>
+      <div class="form-group" id="pickup-time-group" style="display:none">
+        <label class="form-label">取貨時段 *</label>
+        <div class="ship-options" id="time-options">
+          <label class="ship-option" data-time="上午">
+            <input type="radio" name="timeslot" value="上午" />
+            <div class="ship-top">
+              <span class="ship-title">☀️ 上午</span>
+              <span class="ship-fee">09:00 - 12:00</span>
+            </div>
+          </label>
+          <label class="ship-option" data-time="下午">
+            <input type="radio" name="timeslot" value="下午" />
+            <div class="ship-top">
+              <span class="ship-title">🌤️ 下午</span>
+              <span class="ship-fee">13:00 - 18:00</span>
+            </div>
+          </label>
+        </div>
       </div>
 
       <div class="form-group">
@@ -647,7 +675,19 @@ let cart = {};
 let emailVerified = false;
 let verifiedEmail = "";
 let currentShippingMethod = "";
+let currentTimeslot = "";
 let queryEmailVerified = false;
+
+// T+2 日期（YYYY-MM-DD）
+function getTPlusTwoDate() {
+  const d = new Date();
+  d.setDate(d.getDate() + 2);
+  return d.toISOString().split('T')[0];
+}
+function formatDateZh(iso) {
+  // 2026-04-19 → 2026/04/19
+  return iso.replace(/-/g, '/');
+}
 
 // ── 初始化 ────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
@@ -662,11 +702,9 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function setMinDate() {
-  // T+2：最小可選日期為今天+2
-  const d = new Date();
-  d.setDate(d.getDate() + 2);
-  const iso = d.toISOString().split('T')[0];
-  document.getElementById('f-date').min = iso;
+  const iso = getTPlusTwoDate();
+  const dateInput = document.getElementById('f-date');
+  if (dateInput) dateInput.min = iso;
 }
 
 // ── 載入商品 ──────────────────────────────────────────
@@ -795,29 +833,53 @@ function updateCart() {
 
 // ── 配送方式切換 ──────────────────────────────────────
 document.addEventListener('change', (e) => {
-  if (e.target && e.target.name === 'ship') {
-    selectShippingMethod(e.target.value);
-  }
+  if (e.target && e.target.name === 'ship') selectShippingMethod(e.target.value);
+  if (e.target && e.target.name === 'timeslot') selectTimeslot(e.target.value);
 });
 document.addEventListener('click', (e) => {
   const opt = e.target.closest('.ship-option');
   if (!opt || opt.classList.contains('disabled')) return;
-  const method = opt.dataset.method;
-  const radio = opt.querySelector('input');
-  if (radio) radio.checked = true;
-  selectShippingMethod(method);
+  if (opt.dataset.method) {
+    const radio = opt.querySelector('input');
+    if (radio) radio.checked = true;
+    selectShippingMethod(opt.dataset.method);
+  } else if (opt.dataset.time) {
+    const radio = opt.querySelector('input');
+    if (radio) radio.checked = true;
+    selectTimeslot(opt.dataset.time);
+  }
 });
 
 function selectShippingMethod(method) {
   if (method === '超商') return;
   currentShippingMethod = method;
-  document.querySelectorAll('.ship-option').forEach(o => {
+  document.querySelectorAll('.ship-option[data-method]').forEach(o => {
     o.classList.toggle('selected', o.dataset.method === method);
   });
   document.getElementById('addr-group').style.display = method === '宅配' ? 'flex' : 'none';
-  document.getElementById('date-label').textContent =
-    method === '宅配' ? '期望送達日期 *' : '取貨日期 *';
 
+  // 宅配 / 親取 顯示不同區塊
+  const deliveryNoteGroup = document.getElementById('delivery-note-group');
+  const pickupDateGroup = document.getElementById('pickup-date-group');
+  const pickupTimeGroup = document.getElementById('pickup-time-group');
+
+  if (method === '宅配') {
+    deliveryNoteGroup.style.display = 'flex';
+    pickupDateGroup.style.display = 'none';
+    pickupTimeGroup.style.display = 'none';
+    // 填入 T+2 的日期到文字中
+    document.getElementById('delivery-date').textContent = formatDateZh(getTPlusTwoDate());
+  } else if (method === '親取') {
+    deliveryNoteGroup.style.display = 'none';
+    pickupDateGroup.style.display = 'flex';
+    pickupTimeGroup.style.display = 'flex';
+  } else {
+    deliveryNoteGroup.style.display = 'none';
+    pickupDateGroup.style.display = 'none';
+    pickupTimeGroup.style.display = 'none';
+  }
+
+  // 配送說明框（通用）
   const note = document.getElementById('shipping-note');
   if (method === '宅配') {
     note.style.display = 'block';
@@ -826,11 +888,18 @@ function selectShippingMethod(method) {
       若同訂單包含冷凍商品，全單以冷凍運費計算。`;
   } else if (method === '親取') {
     note.style.display = 'block';
-    note.innerHTML = `🏪 親取免運費。確認訂單後將以 Email 告知取貨地點與時段。`;
+    note.innerHTML = `🏪 親取免運費。下單確認後將以 Email 告知取貨地點。`;
   } else {
     note.style.display = 'none';
   }
   updateCart();
+}
+
+function selectTimeslot(time) {
+  currentTimeslot = time;
+  document.querySelectorAll('.ship-option[data-time]').forEach(o => {
+    o.classList.toggle('selected', o.dataset.time === time);
+  });
 }
 
 // ── Email 驗證 ────────────────────────────────────────
@@ -912,7 +981,7 @@ function showVerified() {
 async function submitOrder() {
   const name = document.getElementById('f-name').value.trim();
   const phone = document.getElementById('f-phone').value.trim();
-  const pickupDate = document.getElementById('f-date').value;
+  const pickupDateRaw = document.getElementById('f-date').value;
   const note = document.getElementById('f-note').value.trim();
   const address = document.getElementById('f-address').value.trim();
   const errorEl = document.getElementById('form-error');
@@ -927,7 +996,21 @@ async function submitOrder() {
   if (!/^09\d{8}$/.test(phone.replace(/[-\s]/g, ''))) return showError('請輸入有效的手機號碼（09 開頭）');
   if (!currentShippingMethod) return showError('請選擇配送方式');
   if (currentShippingMethod === '宅配' && !address) return showError('宅配需填寫地址');
-  if (!pickupDate) return showError('請選擇日期');
+
+  // 取貨日期組裝：
+  // - 宅配：自動 = T+2（使用者不選）
+  // - 親取：使用者選日期 + 上午/下午
+  let pickupDate;
+  if (currentShippingMethod === '宅配') {
+    pickupDate = formatDateZh(getTPlusTwoDate()) + ' 出貨';
+  } else if (currentShippingMethod === '親取') {
+    if (!pickupDateRaw) return showError('請選擇取貨日期');
+    if (pickupDateRaw < getTPlusTwoDate()) return showError('取貨日期最早為下單後第 2 天');
+    if (!currentTimeslot) return showError('請選擇取貨時段');
+    pickupDate = formatDateZh(pickupDateRaw) + ' ' + currentTimeslot;
+  } else {
+    return showError('配送方式無效');
+  }
 
   const items = getCartItems();
   if (!items.length) return showError('購物車是空的');
@@ -999,7 +1082,7 @@ async function showResultView(orderId, paid) {
     document.getElementById('result-icon').textContent = '🎉';
     document.getElementById('result-title').textContent = '付款成功！';
     document.getElementById('result-msg').innerHTML =
-      '感謝您的訂購，店家已收到通知，<br/>將於 Email 與您確認取貨/配送細節 🐄';
+      '感謝您的訂購，店家已收到通知。<br/>取貨/出貨資訊請至「🔍 查詢訂單」查看，<br/>或等候 Email 確認 🐄';
   } else {
     document.getElementById('result-icon').textContent = '⚠️';
     document.getElementById('result-title').textContent = '付款未完成';
@@ -1106,6 +1189,7 @@ function resetPage() {
   cart = {};
   emailVerified = false; verifiedEmail = '';
   currentShippingMethod = '';
+  currentTimeslot = '';
   queryEmailVerified = false;
 
   document.getElementById('result-view').classList.remove('show');
@@ -1115,8 +1199,12 @@ function resetPage() {
   document.getElementById('form-error').style.display = 'none';
   document.getElementById('addr-group').style.display = 'none';
   document.getElementById('shipping-note').style.display = 'none';
+  document.getElementById('delivery-note-group').style.display = 'none';
+  document.getElementById('pickup-date-group').style.display = 'none';
+  document.getElementById('pickup-time-group').style.display = 'none';
   document.querySelectorAll('.ship-option').forEach(o => o.classList.remove('selected'));
   document.querySelectorAll('input[name="ship"]').forEach(r => r.checked = false);
+  document.querySelectorAll('input[name="timeslot"]').forEach(r => r.checked = false);
 
   // 重建驗證區
   document.getElementById('verify-section').innerHTML = `
