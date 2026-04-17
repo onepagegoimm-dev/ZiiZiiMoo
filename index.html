@@ -1092,7 +1092,10 @@ function startPaymentPolling(orderId) {
   }, 3000);
 }
 
+let waitingOrderId = '';
+
 function showWaitingView(orderId) {
+  waitingOrderId = orderId;
   document.getElementById('shop-view').style.display = 'none';
   document.getElementById('query-view').classList.remove('show');
   const v = document.getElementById('result-view');
@@ -1101,8 +1104,37 @@ function showWaitingView(orderId) {
   document.getElementById('result-title').textContent = '等待付款完成…';
   document.getElementById('result-msg').innerHTML =
     '已在新分頁開啟綠界付款頁面，<br/>完成付款後此頁會自動更新。<br/><br/>' +
-    '<span style="color:var(--muted); font-size:0.8rem">若沒有開啟新分頁，請確認瀏覽器未封鎖彈窗</span>';
+    '<span style="color:var(--muted); font-size:0.8rem">若沒有開啟新分頁，請確認瀏覽器未封鎖彈窗</span>' +
+    '<div style="margin-top:1rem"><button class="btn-ghost" onclick="manualSync()">🔄 我已付款，手動同步</button></div>' +
+    '<div id="sync-status" style="margin-top:0.5rem; font-size:0.75rem; color:var(--muted)"></div>';
   document.getElementById('result-order-id').textContent = `訂單編號：${orderId}`;
+}
+
+async function manualSync() {
+  if (!waitingOrderId) return;
+  const statusEl = document.getElementById('sync-status');
+  statusEl.textContent = '同步中…';
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'getOrderStatus', orderId: waitingOrderId, forceSync: true })
+    });
+    const data = await res.json();
+    if (data.success && data.paymentStatus === '已付款') {
+      clearInterval(pollTimer);
+      showResultView(waitingOrderId, true);
+      return;
+    }
+    if (data.syncError) {
+      statusEl.textContent = '同步失敗：' + data.syncError;
+    } else if (data.syncInfo && data.syncInfo.TradeStatus !== undefined) {
+      statusEl.textContent = `ECPay 回報 TradeStatus=${data.syncInfo.TradeStatus}（付款狀態：${data.paymentStatus}）`;
+    } else {
+      statusEl.textContent = `尚未收到付款（${data.paymentStatus || '-'}），請稍後再試`;
+    }
+  } catch (e) {
+    statusEl.textContent = '網路錯誤';
+  }
 }
 
 function showError(msg) {
