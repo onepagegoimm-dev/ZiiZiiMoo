@@ -12,7 +12,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet" />
 <style>
-  /* ── 色票 ── */
   :root {
     --cream:   #ffffff;
     --warm:    #fff5f5;
@@ -26,6 +25,8 @@
     --shadow:  rgba(0,0,0,0.08);
     --green:   #7dba6a;
     --red:     #c0392b;
+    --cold:    #5aa0d8;
+    --frozen:  #6d8cc4;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,39 +39,56 @@
     overflow-x: hidden;
   }
 
-  /* ── 背景紋理（白底，移除） ── */
+  /* ── 頂部工具列（手機友善） ── */
+  .top-bar {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(242,196,196,0.4);
+    padding: 0.5rem 1rem;
+    display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem;
+  }
+  .top-btn {
+    background: var(--white);
+    border: 1.5px solid var(--blush);
+    border-radius: 100px;
+    color: var(--mauve);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.82rem;
+    padding: 0.45rem 0.95rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .top-btn:hover { background: var(--warm); }
+  .top-btn:active { transform: scale(0.96); }
 
   /* ── Header ── */
   header {
     position: relative; z-index: 10;
     text-align: center;
-    padding: 2.5rem 1.5rem 1.5rem;
+    padding: 1.5rem 1.5rem 1rem;
     background: transparent;
   }
-
   .logo-wrap {
     display: inline-flex; flex-direction: column; align-items: center; gap: 0.4rem;
   }
-
   .logo-icon {
-    width: 120px; height: 120px;
+    width: 100px; height: 100px;
     animation: float 3s ease-in-out infinite;
   }
   .logo-icon img { width: 100%; height: 100%; object-fit: contain; }
-
   @keyframes float {
     0%,100% { transform: translateY(0); }
-    50%      { transform: translateY(-6px); }
+    50%     { transform: translateY(-6px); }
   }
-
   .logo-name {
     font-family: 'Zen Maru Gothic', sans-serif;
-    font-size: 2.8rem;
+    font-size: 2.4rem;
     font-weight: 700;
     color: var(--red);
     letter-spacing: 0.08em;
   }
-
   .logo-sub {
     font-size: 0.78rem;
     letter-spacing: 0.25em;
@@ -78,23 +96,13 @@
     text-transform: uppercase;
   }
 
-  /* ── 裝飾線 ── */
-  .deco-line {
-    display: flex; align-items: center; gap: 1rem;
-    max-width: 260px; margin: 1rem auto 0;
-  }
-  .deco-line span { flex: 1; height: 1px; background: var(--blush); }
-  .deco-line em { font-style: normal; font-size: 0.8rem; color: var(--rose); }
+  main { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 1rem 1.5rem 2rem; }
 
-  /* ── 主內容 ── */
-  main { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 1.5rem; }
-
-  /* ── Section 標題 ── */
   .section-title {
     font-family: 'Zen Maru Gothic', sans-serif;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     color: var(--brown);
-    margin-bottom: 1.2rem;
+    margin: 1.4rem 0 1rem;
     display: flex; align-items: center; gap: 0.6rem;
   }
   .section-title::after { content: ''; flex: 1; height: 1px; background: var(--blush); }
@@ -112,12 +120,10 @@
     transition: transform 0.2s, box-shadow 0.2s;
     animation: fadeUp 0.5s ease both;
   }
-
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(18px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-
   .product-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px var(--shadow); }
 
   .product-img {
@@ -127,21 +133,31 @@
     font-size: 3rem;
     flex-shrink: 0;
     overflow: hidden;
+    position: relative;
   }
   .product-img img { width: 100%; height: 100%; object-fit: cover; }
 
-  .product-body { padding: 1rem; flex: 1; display: flex; flex-direction: column; gap: 0.3rem; }
+  .ptype-badge {
+    position: absolute; top: 6px; left: 6px;
+    padding: 0.15rem 0.55rem;
+    border-radius: 100px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.05em;
+  }
+  .ptype-normal { background: rgba(0,0,0,0.35); }
+  .ptype-cold   { background: var(--cold); }
+  .ptype-frozen { background: var(--frozen); }
 
+  .product-body { padding: 1rem; flex: 1; display: flex; flex-direction: column; gap: 0.3rem; }
   .product-name { font-weight: 600; font-size: 1rem; }
   .product-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
   .product-price { font-family: 'Zen Maru Gothic', sans-serif; font-size: 1.1rem; color: var(--mauve); margin-top: auto; }
 
-  /* 數量控制 */
-  .qty-control {
-    display: flex; align-items: center; gap: 0.6rem; margin-top: 0.5rem;
-  }
+  .qty-control { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.5rem; }
   .qty-btn {
-    width: 28px; height: 28px; border-radius: 50%;
+    width: 30px; height: 30px; border-radius: 50%;
     border: 1.5px solid var(--blush);
     background: var(--cream); color: var(--brown);
     font-size: 1.1rem; cursor: pointer;
@@ -164,22 +180,22 @@
     animation: fadeUp 0.4s ease;
   }
   #cart-summary.show { display: block; }
-
   .cart-header {
     background: linear-gradient(135deg, var(--blush), var(--rose));
     padding: 0.9rem 1.2rem;
     display: flex; align-items: center; justify-content: space-between;
   }
   .cart-header span { color: var(--white); font-weight: 600; font-size: 0.95rem; }
-
   .cart-items { padding: 1rem 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
-
-  .cart-item {
-    display: flex; justify-content: space-between;
-    font-size: 0.88rem; color: var(--text);
-  }
+  .cart-item { display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--text); }
   .cart-item-name { color: var(--muted); }
-
+  .cart-sub-row {
+    padding: 0.55rem 1.2rem;
+    font-size: 0.85rem;
+    display: flex; justify-content: space-between;
+    color: var(--muted);
+    border-top: 1px dashed var(--blush);
+  }
   .cart-total {
     padding: 0.8rem 1.2rem;
     border-top: 1px dashed var(--blush);
@@ -191,27 +207,31 @@
     font-size: 1.4rem; color: var(--mauve);
   }
 
-  /* ── 訂單表單 ── */
+  /* ── 表單 ── */
   #order-form {
     background: var(--white);
     border-radius: 20px;
     padding: 1.5rem;
     box-shadow: 0 4px 20px var(--shadow);
     border: 1px solid rgba(242,196,196,0.3);
-    display: flex; flex-direction: column; gap: 1rem;
+    display: none; flex-direction: column; gap: 1rem;
     margin-bottom: 2rem;
   }
+  #order-form.show { display: flex; }
 
   .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-
   .form-label {
     font-size: 0.78rem;
     letter-spacing: 0.1em;
     color: var(--mauve);
     text-transform: uppercase;
   }
-
-  .form-input, .form-textarea {
+  .form-hint {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .form-input, .form-textarea, .form-select {
     background: var(--cream);
     border: 1.5px solid var(--blush);
     border-radius: 12px;
@@ -223,14 +243,43 @@
     transition: border-color 0.2s, box-shadow 0.2s;
     width: 100%;
   }
-  .form-input:focus, .form-textarea:focus {
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
     border-color: var(--rose);
     box-shadow: 0 0 0 3px rgba(232,160,160,0.2);
   }
-
   .form-textarea { resize: vertical; min-height: 70px; }
 
-  /* ── Email 驗證區 ── */
+  /* 配送方式選擇（手機友善 radio cards） */
+  .ship-options { display: flex; flex-direction: column; gap: 0.55rem; }
+  .ship-option {
+    position: relative;
+    border: 1.5px solid var(--blush);
+    border-radius: 14px;
+    padding: 0.8rem 0.9rem;
+    cursor: pointer;
+    background: var(--cream);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .ship-option.selected { border-color: var(--rose); background: var(--warm); }
+  .ship-option.disabled { opacity: 0.5; cursor: not-allowed; }
+  .ship-option input { position: absolute; opacity: 0; pointer-events: none; }
+  .ship-top { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+  .ship-title { font-weight: 600; font-size: 0.95rem; color: var(--text); }
+  .ship-fee { font-family: 'Zen Maru Gothic', sans-serif; font-size: 0.9rem; color: var(--mauve); }
+  .ship-desc { font-size: 0.72rem; color: var(--muted); margin-top: 0.25rem; line-height: 1.5; }
+  .soon-tag {
+    background: var(--muted); color: var(--white);
+    padding: 0.1rem 0.45rem; border-radius: 100px;
+    font-size: 0.65rem; margin-left: 0.4rem;
+  }
+
+  .shipping-note {
+    background: #fff8e9; border: 1px solid #f4e0a6;
+    border-radius: 12px; padding: 0.65rem 0.9rem;
+    font-size: 0.76rem; color: #8a6a20; line-height: 1.55;
+  }
+
+  /* Email 驗證 */
   .verify-section {
     background: var(--white);
     border-radius: 20px;
@@ -240,12 +289,8 @@
     margin-bottom: 1.5rem;
     animation: fadeUp 0.4s ease;
   }
-
-  .verify-row {
-    display: flex; gap: 0.5rem; align-items: flex-end;
-  }
+  .verify-row { display: flex; gap: 0.5rem; align-items: flex-end; }
   .verify-row .form-group { flex: 1; }
-
   .verify-btn {
     padding: 0.7rem 1rem;
     background: linear-gradient(135deg, var(--rose), var(--mauve));
@@ -261,7 +306,6 @@
   }
   .verify-btn:hover:not(:disabled) { opacity: 0.85; }
   .verify-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
   .verified-badge {
     display: inline-flex; align-items: center; gap: 0.4rem;
     background: #eaf7e5; border: 1.5px solid #b8dfa8;
@@ -269,7 +313,6 @@
     font-size: 0.85rem; color: var(--green);
     margin-top: 0.8rem;
   }
-
   .info-msg {
     background: #f0f4ff; border: 1px solid #c0d0f0;
     border-radius: 12px; padding: 0.8rem 1rem;
@@ -277,7 +320,7 @@
     margin-top: 0.5rem;
   }
 
-  /* ── 送出按鈕 ── */
+  /* 送出按鈕 */
   .submit-btn {
     width: 100%;
     padding: 1rem;
@@ -296,38 +339,78 @@
   .submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(201,125,125,0.4); }
   .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  /* ── 成功畫面 ── */
-  #success-screen {
-    display: none; text-align: center;
-    padding: 3rem 1.5rem;
-    animation: fadeUp 0.5s ease;
+  /* 結果 / 查詢頁 */
+  .result-view, .query-view {
+    display: none;
+    max-width: 480px; margin: 0 auto;
+    padding: 1.5rem;
   }
-  #success-screen.show { display: block; }
-  .success-icon { font-size: 4rem; margin-bottom: 1rem; animation: pop 0.4s ease 0.1s both; }
-  @keyframes pop { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .success-title { font-family: 'Zen Maru Gothic', sans-serif; font-size: 1.6rem; color: var(--brown); margin-bottom: 0.5rem; }
-  .success-msg { font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
+  .result-view.show, .query-view.show { display: block; animation: fadeUp 0.4s ease; }
+
+  .result-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 4px 20px var(--shadow);
+    border: 1px solid rgba(242,196,196,0.3);
+    text-align: center;
+  }
+  .result-icon { font-size: 3.6rem; margin-bottom: 0.8rem; }
+  .result-title {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 1.4rem; color: var(--brown); margin-bottom: 0.5rem;
+  }
+  .result-msg { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
   .order-id-badge {
-    display: inline-block; margin-top: 1.2rem;
+    display: inline-block; margin-top: 1rem;
     background: var(--warm); border: 1.5px solid var(--blush);
     border-radius: 100px; padding: 0.4rem 1.2rem;
-    font-size: 0.82rem; color: var(--mauve); letter-spacing: 0.08em;
+    font-size: 0.82rem; color: var(--mauve); letter-spacing: 0.05em;
   }
-  .new-order-btn {
-    margin-top: 2rem;
-    padding: 0.75rem 2rem;
+  .btn-ghost {
+    margin-top: 1.5rem;
+    padding: 0.7rem 1.6rem;
     background: var(--white);
     border: 1.5px solid var(--blush);
     border-radius: 100px;
     color: var(--mauve);
     font-family: 'Noto Sans TC', sans-serif;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     transition: background 0.2s;
   }
-  .new-order-btn:hover { background: var(--warm); }
+  .btn-ghost:hover { background: var(--warm); }
 
-  /* ── 載入中 ── */
+  /* 訂單清單 */
+  .orders-list { display: flex; flex-direction: column; gap: 0.85rem; margin-top: 1rem; }
+  .order-card {
+    background: var(--white);
+    border-radius: 16px;
+    border: 1px solid rgba(242,196,196,0.4);
+    box-shadow: 0 2px 10px var(--shadow);
+    padding: 1rem 1.1rem;
+  }
+  .order-row {
+    display: flex; justify-content: space-between;
+    font-size: 0.82rem; padding: 0.25rem 0;
+    gap: 0.5rem;
+  }
+  .order-row .lbl { color: var(--muted); flex-shrink: 0; }
+  .order-row .val { color: var(--text); text-align: right; word-break: break-all; }
+  .order-id { font-weight: 700; color: var(--brown); font-size: 0.95rem; margin-bottom: 0.4rem; }
+  .pill {
+    display: inline-block; padding: 0.12rem 0.55rem;
+    border-radius: 100px; font-size: 0.72rem; font-weight: 600;
+  }
+  .pill-待付款 { background: #FFF8E1; color: #856404; }
+  .pill-已付款 { background: #E8F5E9; color: #2E7D32; }
+  .pill-逾時未付, .pill-失敗, .pill-已取消 { background: #FAD4D4; color: #7A3A3A; }
+  .pill-已取貨 { background: #D6F0D3; color: #3A7A4F; }
+  .pill-待確認 { background: #FFF8E1; color: #856404; }
+  .pill-已收訂金 { background: #E3F2FD; color: #1565C0; }
+  .pill-已付清 { background: #E8F5E9; color: #2E7D32; }
+
+  /* 其他 */
   .loading-wrap {
     text-align: center; padding: 3rem;
     color: var(--muted); font-size: 0.9rem;
@@ -342,27 +425,33 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* 錯誤 */
   .error-msg {
     background: #fff0f0; border: 1px solid #f9c0c0;
     border-radius: 12px; padding: 0.8rem 1rem;
     font-size: 0.85rem; color: #c97d7d; text-align: center;
   }
 
-  /* Footer */
   footer {
-    text-align: center; padding: 2rem;
+    text-align: center; padding: 2rem 1rem 3rem;
     font-size: 0.75rem; color: var(--muted);
     position: relative; z-index: 1;
   }
 
   @media (max-width: 360px) {
-    .logo-name { font-size: 2.4rem; }
+    .logo-name { font-size: 2rem; }
+    .logo-icon { width: 86px; height: 86px; }
     .product-img { width: 90px; min-height: 90px; font-size: 2.4rem; }
+    .top-btn { font-size: 0.76rem; padding: 0.4rem 0.8rem; }
+    main { padding: 0.5rem 1rem 2rem; }
   }
 </style>
 </head>
 <body>
+
+<!-- 頂部工具列 -->
+<div class="top-bar">
+  <button class="top-btn" id="btn-query" onclick="openQueryView()">🔍 查詢訂單</button>
+</div>
 
 <!-- Header -->
 <header>
@@ -372,9 +461,9 @@
   </div>
 </header>
 
+<!-- ══ 訂購頁 ══ -->
 <main id="shop-view">
-  <!-- 商品區 -->
-  <div class="section-title"></div>
+  <div class="section-title">🧁 商品</div>
 
   <div id="products-container">
     <div class="loading-wrap">
@@ -383,24 +472,28 @@
     </div>
   </div>
 
-  <!-- 購物車摘要 -->
   <div id="cart-summary">
     <div class="cart-header">
       <span>🛒 購物車</span>
       <span id="cart-count-badge"></span>
     </div>
     <div class="cart-items" id="cart-items-list"></div>
+    <div class="cart-sub-row">
+      <span>小計</span><span>$<span id="cart-subtotal">0</span></span>
+    </div>
+    <div class="cart-sub-row" id="shipping-row" style="display:none">
+      <span id="shipping-label">運費</span><span>$<span id="cart-shipping">0</span></span>
+    </div>
     <div class="cart-total">
-      <span class="cart-total-label">合計</span>
+      <span class="cart-total-label">應付金額</span>
       <span class="cart-total-amount">$<span id="cart-total-num">0</span></span>
     </div>
   </div>
 
-  <!-- 訂購表單 -->
   <div id="form-section" style="display:none">
     <div class="section-title">📝 填寫訂購資訊</div>
 
-    <!-- Email 驗證區 -->
+    <!-- Email 驗證 -->
     <div class="verify-section" id="verify-section">
       <div class="form-group">
         <label class="form-label">Email *</label>
@@ -425,78 +518,176 @@
       <div id="verify-status"></div>
     </div>
 
-    <!-- 訂購資訊 -->
-    <div id="order-form" style="display:none">
+    <div id="order-form">
       <div class="form-group">
         <label class="form-label">姓名 *</label>
         <input class="form-input" id="f-name" type="text" placeholder="請輸入您的姓名" required />
       </div>
       <div class="form-group">
         <label class="form-label">電話 *</label>
-        <input class="form-input" id="f-phone" type="tel" placeholder="0912-345-678" required />
+        <input class="form-input" id="f-phone" type="tel" placeholder="0912345678" required />
       </div>
+
       <div class="form-group">
-        <label class="form-label">取貨日期 *</label>
-        <input class="form-input" id="f-date" type="date" required />
+        <label class="form-label">配送方式 *</label>
+        <div class="ship-options" id="ship-options">
+          <label class="ship-option" data-method="親取">
+            <input type="radio" name="ship" value="親取" />
+            <div class="ship-top">
+              <span class="ship-title">🏪 親取（自取）</span>
+              <span class="ship-fee">免運</span>
+            </div>
+            <div class="ship-desc">下單 2 天後起可取，取貨地點將於確認後告知</div>
+          </label>
+          <label class="ship-option" data-method="宅配">
+            <input type="radio" name="ship" value="宅配" />
+            <div class="ship-top">
+              <span class="ship-title">🚚 宅配到府</span>
+              <span class="ship-fee" id="opt-fee-home">—</span>
+            </div>
+            <div class="ship-desc" id="opt-desc-home">依商品屬性收取運費（一般 / 冷藏 / 冷凍）</div>
+          </label>
+          <label class="ship-option disabled" data-method="超商">
+            <input type="radio" name="ship" value="超商" disabled />
+            <div class="ship-top">
+              <span class="ship-title">🏪 超商店到店<span class="soon-tag">即將推出</span></span>
+              <span class="ship-fee">—</span>
+            </div>
+            <div class="ship-desc">7-11 / 全家店到店配送，開放時將另行公告</div>
+          </label>
+        </div>
+        <div class="shipping-note" id="shipping-note" style="display:none"></div>
       </div>
+
+      <div class="form-group" id="addr-group" style="display:none">
+        <label class="form-label">宅配地址 *</label>
+        <textarea class="form-textarea" id="f-address" placeholder="請填寫完整收件地址（含縣市、鄉鎮、路名、號碼）"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" id="date-label">取貨日期 *</label>
+        <input class="form-input" id="f-date" type="date" required />
+        <div class="form-hint">最早可選日期為下單後第 2 天</div>
+      </div>
+
       <div class="form-group">
         <label class="form-label">備註</label>
         <textarea class="form-textarea" id="f-note" placeholder="特殊需求、過敏資訊等…"></textarea>
       </div>
+
       <div id="form-error" class="error-msg" style="display:none"></div>
       <button class="submit-btn" id="submit-btn" onclick="submitOrder()">
-        <span>🎁</span><span>確認送出訂單</span>
+        <span>💳</span><span>前往綠界線上付款</span>
       </button>
+      <div class="form-hint" style="text-align:center">
+        送出後將跳轉至綠界金流頁面，付款完成後會自動返回本站。
+      </div>
     </div>
   </div>
 </main>
 
-<!-- 成功畫面 -->
-<div id="success-screen">
-  <div class="success-icon">🎉</div>
-  <div class="success-title">訂單已送出！</div>
-  <div class="success-msg">
-    謝謝您的訂購，<br/>我們會盡快與您確認取貨細節 🐄
+<!-- ══ 付款結果頁 ══ -->
+<div class="result-view" id="result-view">
+  <div class="result-card" id="result-card">
+    <div class="result-icon" id="result-icon">⏳</div>
+    <div class="result-title" id="result-title">付款處理中…</div>
+    <div class="result-msg" id="result-msg">正在確認您的付款狀態</div>
+    <div class="order-id-badge" id="result-order-id"></div>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem;">
+      <button class="btn-ghost" onclick="openQueryView()">🔍 查詢我的訂單</button>
+      <button class="btn-ghost" onclick="resetPage()">🏠 回首頁</button>
+    </div>
   </div>
-  <div class="order-id-badge" id="success-order-id"></div>
-  <br/>
-  <button class="new-order-btn" onclick="resetPage()">再次訂購</button>
 </div>
 
-<footer></footer>
+<!-- ══ 訂單查詢頁 ══ -->
+<div class="query-view" id="query-view">
+  <div class="section-title">🔍 訂單查詢</div>
+  <div class="verify-section">
+    <div class="form-group">
+      <label class="form-label">Email *</label>
+      <div class="verify-row">
+        <div class="form-group">
+          <input class="form-input" id="q-email" type="email" placeholder="下單時使用的 Email" />
+        </div>
+        <button class="verify-btn" id="q-send-btn" onclick="querySendCode()">發送驗證碼</button>
+      </div>
+    </div>
+    <div id="q-code-section" style="display:none; margin-top:0.8rem;">
+      <div class="form-group">
+        <label class="form-label">驗證碼</label>
+        <div class="verify-row">
+          <div class="form-group">
+            <input class="form-input" id="q-code" type="text" placeholder="輸入 6 位數驗證碼" maxlength="6" />
+          </div>
+          <button class="verify-btn" id="q-verify-btn" onclick="queryOrders()">查詢</button>
+        </div>
+      </div>
+    </div>
+    <div id="q-status"></div>
+  </div>
+
+  <div id="q-results"></div>
+
+  <div style="text-align:center; margin-top:1.2rem;">
+    <button class="btn-ghost" onclick="resetPage()">🏠 回訂購頁</button>
+  </div>
+</div>
+
+<footer>© ZiiZiiMoo Handmade Bakery</footer>
 
 <script>
-// ── 設定你的 Apps Script 網址 ──────────────────────────
+// ──────────────────────────────────────────────────────
 const API_URL = "https://script.google.com/macros/s/AKfycbxoDlyQvRumGXSKM2v_AkzbNGzgLk-55s2OdBv9a8EWTOP6NQuxfTaU9bd178R8mTU/exec";
 
-// ── 資料 ─────────────────────────────────────────────
+// ── 狀態 ─────────────────────────────────────────────
 let products = [];
-let cart     = {};
+let shippingFees = { "一般": 120, "冷藏": 180, "冷凍": 220 };
+let cart = {};
 let emailVerified = false;
 let verifiedEmail = "";
+let currentShippingMethod = "";
+let queryEmailVerified = false;
 
 // ── 初始化 ────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   setMinDate();
+  // ECPay 跳轉回來 → 切換到結果頁
+  const params = new URLSearchParams(location.search);
+  if (params.get('order')) {
+    showResultView(params.get('order'), params.get('paid') === '1');
+    return;
+  }
   loadProducts();
 });
 
 function setMinDate() {
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('f-date').min = today;
+  // T+2：最小可選日期為今天+2
+  const d = new Date();
+  d.setDate(d.getDate() + 2);
+  const iso = d.toISOString().split('T')[0];
+  document.getElementById('f-date').min = iso;
 }
 
 // ── 載入商品 ──────────────────────────────────────────
 async function loadProducts() {
   try {
-    const res  = await fetch(`${API_URL}?action=getProducts`);
+    const res = await fetch(`${API_URL}?action=getProducts`);
     const data = await res.json();
     products = data.products || [];
+    if (data.shippingFees) shippingFees = data.shippingFees;
+    updateShippingOptionFees();
     renderProducts();
-  } catch(e) {
+  } catch (e) {
     document.getElementById('products-container').innerHTML =
       `<div class="error-msg">無法載入商品，請稍後再試</div>`;
   }
+}
+
+function ptypeBadge(t) {
+  if (t === '冷藏') return '<span class="ptype-badge ptype-cold">冷藏</span>';
+  if (t === '冷凍') return '<span class="ptype-badge ptype-frozen">冷凍</span>';
+  return '<span class="ptype-badge ptype-normal">常溫</span>';
 }
 
 function renderProducts() {
@@ -505,9 +696,7 @@ function renderProducts() {
     container.innerHTML = `<div class="loading-wrap">目前暫無商品，請稍後再來</div>`;
     return;
   }
-
   const EMOJI = ["🧁","🍰","🥐","🍞","🎂","🍩","🥧","🍪"];
-
   container.innerHTML = `<div class="products-grid">${
     products.map((p, i) => {
       const emoji = EMOJI[i % EMOJI.length];
@@ -516,7 +705,7 @@ function renderProducts() {
         : emoji;
       return `
         <div class="product-card" style="animation-delay:${i*0.08}s">
-          <div class="product-img">${imgHtml}</div>
+          <div class="product-img">${ptypeBadge(p.product_type)}${imgHtml}</div>
           <div class="product-body">
             <div class="product-name">${p.name}</div>
             <div class="product-desc">${p.description || ''}</div>
@@ -532,20 +721,47 @@ function renderProducts() {
   }</div>`;
 }
 
-// ── 購物車操作 ────────────────────────────────────────
+function updateShippingOptionFees() {
+  // 將運費表寫到宅配選項標籤
+  const opt = document.getElementById('opt-fee-home');
+  const desc = document.getElementById('opt-desc-home');
+  if (!opt) return;
+  const f = shippingFees;
+  opt.textContent = `依商品`;
+  desc.innerHTML = `一般 $${f['一般']||0}　冷藏 $${f['冷藏']||0}　冷凍 $${f['冷凍']||0}<br/>訂單內混合商品時，以最高級距收費`;
+}
+
+// ── 購物車 ────────────────────────────────────────────
 function changeQty(id, delta) {
   cart[id] = Math.max(0, (cart[id] || 0) + delta);
   document.getElementById(`qty-${id}`).textContent = cart[id];
   updateCart();
 }
 
+function getCartItems() {
+  return products.filter(p => cart[p.id] > 0).map(p => ({ ...p, qty: cart[p.id] }));
+}
+
+function calcShipping(items, method) {
+  if (method === '親取') return 0;
+  if (method !== '宅配') return 0;
+  if (!items.length) return 0;
+  const levels = { '一般': 1, '冷藏': 2, '冷凍': 3 };
+  let maxLv = 0, maxType = '一般';
+  items.forEach(it => {
+    const t = it.product_type || '一般';
+    const lv = levels[t] || 1;
+    if (lv > maxLv) { maxLv = lv; maxType = t; }
+  });
+  return Number(shippingFees[maxType] || shippingFees['一般'] || 0);
+}
+
 function updateCart() {
   const items = getCartItems();
-  const total = items.reduce((s, i) => s + i.price * i.qty, 0);
-
-  const summary  = document.getElementById('cart-summary');
-  const formSec  = document.getElementById('form-section');
-  const itemList = document.getElementById('cart-items-list');
+  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+  const summary = document.getElementById('cart-summary');
+  const formSec = document.getElementById('form-section');
+  const list = document.getElementById('cart-items-list');
 
   if (items.length === 0) {
     summary.classList.remove('show');
@@ -553,180 +769,168 @@ function updateCart() {
     return;
   }
 
-  document.getElementById('cart-count-badge').textContent = `${items.length} 項商品`;
-  itemList.innerHTML = items.map(i => `
+  document.getElementById('cart-count-badge').textContent = `${items.length} 項`;
+  list.innerHTML = items.map(i => `
     <div class="cart-item">
       <span class="cart-item-name">${i.name} × ${i.qty}</span>
       <span>$${i.price * i.qty}</span>
     </div>`).join('');
-  document.getElementById('cart-total-num').textContent = total;
+  document.getElementById('cart-subtotal').textContent = subtotal;
+
+  const shipFee = calcShipping(items, currentShippingMethod);
+  const shipRow = document.getElementById('shipping-row');
+  if (currentShippingMethod) {
+    shipRow.style.display = 'flex';
+    document.getElementById('shipping-label').textContent =
+      currentShippingMethod === '親取' ? '運費（親取）' : '運費（宅配）';
+    document.getElementById('cart-shipping').textContent = shipFee;
+  } else {
+    shipRow.style.display = 'none';
+  }
+  document.getElementById('cart-total-num').textContent = subtotal + shipFee;
 
   summary.classList.add('show');
   formSec.style.display = 'block';
 }
 
-function getCartItems() {
-  return products
-    .filter(p => cart[p.id] > 0)
-    .map(p => ({ ...p, qty: cart[p.id] }));
+// ── 配送方式切換 ──────────────────────────────────────
+document.addEventListener('change', (e) => {
+  if (e.target && e.target.name === 'ship') {
+    selectShippingMethod(e.target.value);
+  }
+});
+document.addEventListener('click', (e) => {
+  const opt = e.target.closest('.ship-option');
+  if (!opt || opt.classList.contains('disabled')) return;
+  const method = opt.dataset.method;
+  const radio = opt.querySelector('input');
+  if (radio) radio.checked = true;
+  selectShippingMethod(method);
+});
+
+function selectShippingMethod(method) {
+  if (method === '超商') return;
+  currentShippingMethod = method;
+  document.querySelectorAll('.ship-option').forEach(o => {
+    o.classList.toggle('selected', o.dataset.method === method);
+  });
+  document.getElementById('addr-group').style.display = method === '宅配' ? 'flex' : 'none';
+  document.getElementById('date-label').textContent =
+    method === '宅配' ? '期望送達日期 *' : '取貨日期 *';
+
+  const note = document.getElementById('shipping-note');
+  if (method === '宅配') {
+    note.style.display = 'block';
+    note.innerHTML = `📦 運費依訂單內最高級距收取：<br/>
+      常溫 $${shippingFees['一般']||0}　冷藏 $${shippingFees['冷藏']||0}　冷凍 $${shippingFees['冷凍']||0}<br/>
+      若同訂單包含冷凍商品，全單以冷凍運費計算。`;
+  } else if (method === '親取') {
+    note.style.display = 'block';
+    note.innerHTML = `🏪 親取免運費。確認訂單後將以 Email 告知取貨地點與時段。`;
+  } else {
+    note.style.display = 'none';
+  }
+  updateCart();
 }
 
-// ── Email 格式驗證 ────────────────────────────────────
+// ── Email 驗證 ────────────────────────────────────────
 function isValidEmail(email) {
-  // 標準 Email 格式：xxx@xxx.xx
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
 
-// ── Email 驗證 ───────────────────────────────────────
 async function sendCode() {
   const email = document.getElementById('f-email').value.trim();
   const statusEl = document.getElementById('verify-status');
   const btn = document.getElementById('send-code-btn');
 
-  if (!email) {
-    statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">請輸入 Email</div>`;
-    return;
-  }
-  if (!isValidEmail(email)) {
-    statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">Email 格式不正確，請確認格式（例如：name@example.com）</div>`;
-    return;
-  }
+  if (!email) { statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">請輸入 Email</div>`; return; }
+  if (!isValidEmail(email)) { statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">Email 格式不正確</div>`; return; }
 
-  btn.disabled = true;
-  btn.textContent = '發送中…';
-  statusEl.innerHTML = '';
-
+  btn.disabled = true; btn.textContent = '發送中…'; statusEl.innerHTML = '';
   try {
-    // 先檢查會員狀態
-    const checkRes = await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'checkMember', email })
-    });
+    const checkRes = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'checkMember', email }) });
     const checkData = await checkRes.json();
 
-    if (checkData.blocked) {
-      statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">此 Email 已被停用，請聯繫店家</div>`;
-      btn.disabled = false;
-      btn.textContent = '發送驗證碼';
-      return;
-    }
-
-    if (checkData.hasActiveOrder) {
-      statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">您有未完成的訂單，結單後才能再次訂購</div>`;
-      btn.disabled = false;
-      btn.textContent = '發送驗證碼';
-      return;
-    }
+    if (checkData.blocked) { statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">此 Email 已被停用，請聯繫店家</div>`; resetSendBtn(btn); return; }
+    if (checkData.hasActiveOrder) { statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">您有未完成的訂單，結單後才能再次訂購</div>`; resetSendBtn(btn); return; }
 
     if (checkData.exists && checkData.verified) {
-      // 已驗證過，直接通過
-      emailVerified = true;
-      verifiedEmail = email;
-      showVerified();
-      return;
+      emailVerified = true; verifiedEmail = email; showVerified(); return;
     }
 
-    // 發送驗證碼
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'sendVerifyCode', email })
-    });
+    const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'sendVerifyCode', email }) });
     const data = await res.json();
 
     if (data.success) {
       document.getElementById('code-section').style.display = 'block';
       statusEl.innerHTML = `<div class="info-msg">驗證碼已寄到 ${email}，請查收信箱（含垃圾郵件）</div>`;
-      // 60 秒冷卻
-      let cd = 60;
-      btn.textContent = `${cd}s`;
-      const timer = setInterval(() => {
-        cd--;
-        btn.textContent = `${cd}s`;
-        if (cd <= 0) {
-          clearInterval(timer);
-          btn.disabled = false;
-          btn.textContent = '重新發送';
-        }
-      }, 1000);
+      startCooldown(btn);
     } else {
       statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">${data.error || '發送失敗'}</div>`;
-      btn.disabled = false;
-      btn.textContent = '發送驗證碼';
+      resetSendBtn(btn);
     }
-  } catch(e) {
+  } catch (e) {
     statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">網路錯誤，請稍後再試</div>`;
-    btn.disabled = false;
-    btn.textContent = '發送驗證碼';
+    resetSendBtn(btn);
   }
+}
+function resetSendBtn(btn) { btn.disabled = false; btn.textContent = '發送驗證碼'; }
+function startCooldown(btn) {
+  let cd = 60; btn.textContent = `${cd}s`;
+  const timer = setInterval(() => {
+    cd--; btn.textContent = `${cd}s`;
+    if (cd <= 0) { clearInterval(timer); btn.disabled = false; btn.textContent = '重新發送'; }
+  }, 1000);
 }
 
 async function verifyEmail() {
   const email = document.getElementById('f-email').value.trim();
-  const code  = document.getElementById('f-code').value.trim();
+  const code = document.getElementById('f-code').value.trim();
   const statusEl = document.getElementById('verify-status');
   const btn = document.getElementById('verify-btn');
 
-  if (!code || code.length !== 6) {
-    statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">請輸入 6 位數驗證碼</div>`;
-    return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = '驗證中…';
-
+  if (!code || code.length !== 6) { statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">請輸入 6 位數驗證碼</div>`; return; }
+  btn.disabled = true; btn.textContent = '驗證中…';
   try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'verifyCode', email, code })
-    });
+    const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'verifyCode', email, code }) });
     const data = await res.json();
-
-    if (data.success && data.verified) {
-      emailVerified = true;
-      verifiedEmail = email;
-      showVerified();
-    } else {
-      statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">${data.error || '驗證失敗'}</div>`;
-      btn.disabled = false;
-      btn.textContent = '驗證';
-    }
-  } catch(e) {
+    if (data.success && data.verified) { emailVerified = true; verifiedEmail = email; showVerified(); }
+    else { statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">${data.error || '驗證失敗'}</div>`; btn.disabled = false; btn.textContent = '驗證'; }
+  } catch (e) {
     statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">網路錯誤，請稍後再試</div>`;
-    btn.disabled = false;
-    btn.textContent = '驗證';
+    btn.disabled = false; btn.textContent = '驗證';
   }
 }
 
 function showVerified() {
-  const section = document.getElementById('verify-section');
-  section.innerHTML = `
-    <div class="verified-badge">✅ 已驗證：${verifiedEmail}</div>
-  `;
-  document.getElementById('order-form').style.display = 'flex';
+  document.getElementById('verify-section').innerHTML =
+    `<div class="verified-badge">✅ 已驗證：${verifiedEmail}</div>`;
+  document.getElementById('order-form').classList.add('show');
 }
 
-// ── 送出訂單 ──────────────────────────────────────────
+// ── 送出訂單 → 導向綠界 ────────────────────────────────
 async function submitOrder() {
-  const name       = document.getElementById('f-name').value.trim();
-  const phone      = document.getElementById('f-phone').value.trim();
+  const name = document.getElementById('f-name').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
   const pickupDate = document.getElementById('f-date').value;
-  const note       = document.getElementById('f-note').value.trim();
-  const errorEl    = document.getElementById('form-error');
-  const btn        = document.getElementById('submit-btn');
+  const note = document.getElementById('f-note').value.trim();
+  const address = document.getElementById('f-address').value.trim();
+  const errorEl = document.getElementById('form-error');
+  const btn = document.getElementById('submit-btn');
 
   errorEl.style.display = 'none';
 
-  if (!emailVerified) { showError('請先完成 Email 驗證'); return; }
-  if (!name)          { showError('請填寫姓名'); return; }
-  if (name.length < 2){ showError('姓名至少 2 個字'); return; }
-  if (!phone)         { showError('請填寫電話'); return; }
-  if (!/^09\d{8}$/.test(phone.replace(/[-\s]/g, ''))) { showError('請輸入有效的手機號碼（09 開頭）'); return; }
-  if (!pickupDate)    { showError('請選擇取貨日期'); return; }
+  if (!emailVerified) return showError('請先完成 Email 驗證');
+  if (!name) return showError('請填寫姓名');
+  if (name.length < 2) return showError('姓名至少 2 個字');
+  if (!phone) return showError('請填寫電話');
+  if (!/^09\d{8}$/.test(phone.replace(/[-\s]/g, ''))) return showError('請輸入有效的手機號碼（09 開頭）');
+  if (!currentShippingMethod) return showError('請選擇配送方式');
+  if (currentShippingMethod === '宅配' && !address) return showError('宅配需填寫地址');
+  if (!pickupDate) return showError('請選擇日期');
 
   const items = getCartItems();
-  if (!items.length) { showError('購物車是空的喔！'); return; }
-
-  const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+  if (!items.length) return showError('購物車是空的');
 
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;margin:0"></span>';
@@ -735,30 +939,45 @@ async function submitOrder() {
     const res = await fetch(API_URL, {
       method: 'POST',
       body: JSON.stringify({
-        action: 'submitOrder',
+        action: 'createPayment',
         email: verifiedEmail,
         customerName: name,
         phone: phone.replace(/[-\s]/g, ''),
-        pickupDate, note, items, total
+        pickupDate, note,
+        shippingMethod: currentShippingMethod,
+        shippingAddress: address,
+        items: items.map(i => ({ id: i.id, qty: i.qty }))
       })
     });
     const data = await res.json();
 
-    if (data.success) {
-      document.getElementById('shop-view').style.display = 'none';
-      const s = document.getElementById('success-screen');
-      s.classList.add('show');
-      document.getElementById('success-order-id').textContent = `訂單編號：${data.orderId}`;
+    if (data.success && data.ecpay) {
+      redirectToEcpay(data.ecpay);
     } else {
-      showError(data.error || '送出失敗');
+      showError(data.error || '建立訂單失敗');
       btn.disabled = false;
-      btn.innerHTML = '<span>🎁</span><span>確認送出訂單</span>';
+      btn.innerHTML = '<span>💳</span><span>前往綠界線上付款</span>';
     }
-  } catch(e) {
-    showError('送出失敗，請稍後再試');
+  } catch (e) {
+    showError('網路錯誤，請稍後再試');
     btn.disabled = false;
-    btn.innerHTML = '<span>🎁</span><span>確認送出訂單</span>';
+    btn.innerHTML = '<span>💳</span><span>前往綠界線上付款</span>';
   }
+}
+
+function redirectToEcpay(ecpay) {
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = ecpay.apiUrl;
+  Object.keys(ecpay.params).forEach(k => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = k;
+    input.value = ecpay.params[k];
+    form.appendChild(input);
+  });
+  document.body.appendChild(form);
+  form.submit();
 }
 
 function showError(msg) {
@@ -767,18 +986,140 @@ function showError(msg) {
   el.style.display = 'block';
 }
 
+// ── 付款結果頁 ────────────────────────────────────────
+async function showResultView(orderId, paid) {
+  document.getElementById('shop-view').style.display = 'none';
+  document.getElementById('query-view').classList.remove('show');
+  const v = document.getElementById('result-view');
+  v.classList.add('show');
+
+  document.getElementById('result-order-id').textContent = `訂單編號：${orderId}`;
+
+  if (paid) {
+    document.getElementById('result-icon').textContent = '🎉';
+    document.getElementById('result-title').textContent = '付款成功！';
+    document.getElementById('result-msg').innerHTML =
+      '感謝您的訂購，店家已收到通知，<br/>將於 Email 與您確認取貨/配送細節 🐄';
+  } else {
+    document.getElementById('result-icon').textContent = '⚠️';
+    document.getElementById('result-title').textContent = '付款未完成';
+    document.getElementById('result-msg').innerHTML =
+      '系統尚未收到付款確認。<br/>若您已完成付款，請稍候 1 分鐘後至「查詢訂單」確認狀態，<br/>或直接重新下單。';
+  }
+  // 向後端再確認一次狀態
+  try {
+    const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getOrderStatus', orderId }) });
+    const data = await res.json();
+    if (data.success && data.paymentStatus === '已付款') {
+      document.getElementById('result-icon').textContent = '🎉';
+      document.getElementById('result-title').textContent = '付款成功！';
+      document.getElementById('result-msg').innerHTML =
+        '感謝您的訂購，店家已收到通知，<br/>將於 Email 與您確認取貨/配送細節 🐄';
+    }
+  } catch (e) {}
+}
+
+// ── 訂單查詢頁 ────────────────────────────────────────
+function openQueryView() {
+  document.getElementById('shop-view').style.display = 'none';
+  document.getElementById('result-view').classList.remove('show');
+  document.getElementById('query-view').classList.add('show');
+  window.scrollTo(0, 0);
+}
+
+async function querySendCode() {
+  const email = document.getElementById('q-email').value.trim();
+  const statusEl = document.getElementById('q-status');
+  const btn = document.getElementById('q-send-btn');
+  if (!email) { statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">請輸入 Email</div>`; return; }
+  if (!isValidEmail(email)) { statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">Email 格式不正確</div>`; return; }
+
+  btn.disabled = true; btn.textContent = '發送中…';
+  try {
+    const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'querySendCode', email }) });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('q-code-section').style.display = 'block';
+      statusEl.innerHTML = `<div class="info-msg">驗證碼已寄到 ${email}，請查收信箱（含垃圾郵件）</div>`;
+      startCooldown(btn);
+    } else {
+      statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">${data.error || '發送失敗'}</div>`;
+      btn.disabled = false; btn.textContent = '發送驗證碼';
+    }
+  } catch (e) {
+    statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">網路錯誤</div>`;
+    btn.disabled = false; btn.textContent = '發送驗證碼';
+  }
+}
+
+async function queryOrders() {
+  const email = document.getElementById('q-email').value.trim();
+  const code = document.getElementById('q-code').value.trim();
+  const statusEl = document.getElementById('q-status');
+  const btn = document.getElementById('q-verify-btn');
+  if (!code || code.length !== 6) { statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">請輸入 6 位數驗證碼</div>`; return; }
+
+  btn.disabled = true; btn.textContent = '查詢中…';
+  try {
+    const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'queryOrders', email, code }) });
+    const data = await res.json();
+    if (data.success) {
+      statusEl.innerHTML = '';
+      renderOrders(data.orders || []);
+    } else {
+      statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">${data.error || '查詢失敗'}</div>`;
+    }
+  } catch (e) {
+    statusEl.innerHTML = `<div class="error-msg" style="margin-top:0.5rem">網路錯誤</div>`;
+  }
+  btn.disabled = false; btn.textContent = '查詢';
+}
+
+function renderOrders(orders) {
+  const c = document.getElementById('q-results');
+  if (!orders.length) {
+    c.innerHTML = `<div class="loading-wrap">找不到此 Email 的訂單</div>`;
+    return;
+  }
+  c.innerHTML = `<div class="orders-list">${orders.map(o => {
+    const payStatus = o.payment_status || '';
+    const ordStatus = o.order_status || '';
+    const ship = o.shipping_method || '';
+    const shipFee = o.shipping_fee || 0;
+    return `
+      <div class="order-card">
+        <div class="order-id">${o.order_id || ''}</div>
+        <div class="order-row"><span class="lbl">下單時間</span><span class="val">${o.timestamp || ''}</span></div>
+        <div class="order-row"><span class="lbl">品項</span><span class="val">${o['品項'] || ''}</span></div>
+        <div class="order-row"><span class="lbl">配送</span><span class="val">${ship}${shipFee ? `（運費 $${shipFee}）` : ''}</span></div>
+        ${o.shipping_address ? `<div class="order-row"><span class="lbl">地址</span><span class="val">${o.shipping_address}</span></div>` : ''}
+        <div class="order-row"><span class="lbl">${ship === '宅配' ? '期望送達' : '取貨日'}</span><span class="val">${o['取貨日期'] || ''}</span></div>
+        <div class="order-row"><span class="lbl">金額</span><span class="val">$${o['總金額'] || 0}</span></div>
+        <div class="order-row"><span class="lbl">付款</span><span class="val"><span class="pill pill-${payStatus}">${payStatus || '-'}</span></span></div>
+        <div class="order-row"><span class="lbl">訂單狀態</span><span class="val"><span class="pill pill-${ordStatus}">${ordStatus || '-'}</span></span></div>
+      </div>`;
+  }).join('')}</div>`;
+}
+
+// ── 回首頁（重置） ────────────────────────────────────
 function resetPage() {
   cart = {};
-  emailVerified = false;
-  verifiedEmail = "";
-  document.getElementById('success-screen').classList.remove('show');
+  emailVerified = false; verifiedEmail = '';
+  currentShippingMethod = '';
+  queryEmailVerified = false;
+
+  document.getElementById('result-view').classList.remove('show');
+  document.getElementById('query-view').classList.remove('show');
   document.getElementById('shop-view').style.display = 'block';
-  document.getElementById('order-form').style.display = 'none';
+  document.getElementById('order-form').classList.remove('show');
   document.getElementById('form-error').style.display = 'none';
+  document.getElementById('addr-group').style.display = 'none';
+  document.getElementById('shipping-note').style.display = 'none';
+  document.querySelectorAll('.ship-option').forEach(o => o.classList.remove('selected'));
+  document.querySelectorAll('input[name="ship"]').forEach(r => r.checked = false);
 
   // 重建驗證區
-  const vs = document.getElementById('verify-section');
-  vs.innerHTML = `
+  document.getElementById('verify-section').innerHTML = `
     <div class="form-group">
       <label class="form-label">Email *</label>
       <div class="verify-row">
@@ -799,16 +1140,22 @@ function resetPage() {
         </div>
       </div>
     </div>
-    <div id="verify-status"></div>
-  `;
+    <div id="verify-status"></div>`;
 
-  document.getElementById('f-name').value = '';
-  document.getElementById('f-phone').value = '';
-  document.getElementById('f-date').value = '';
-  document.getElementById('f-note').value = '';
+  ['f-name','f-phone','f-date','f-note','f-address','q-email','q-code'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('q-code-section').style.display = 'none';
+  document.getElementById('q-results').innerHTML = '';
+  document.getElementById('q-status').innerHTML = '';
+
+  // 清除 URL 上的 order 參數
+  if (location.search) history.replaceState({}, '', location.pathname);
+
   renderProducts();
   updateCart();
-  window.scrollTo(0,0);
+  window.scrollTo(0, 0);
 }
 </script>
 </body>

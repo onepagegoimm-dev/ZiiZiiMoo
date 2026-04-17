@@ -222,6 +222,21 @@ header .subtitle {
 }
 .product-tag.on { background: #D6F0D3; color: #3A7A4F; }
 .product-tag.off { background: #FAD4D4; color: #7A3A3A; }
+.product-tag.type-normal { background: #E0E0E0; color: #555; }
+.product-tag.type-cold { background: #D6EAF8; color: #1B4F72; }
+.product-tag.type-frozen { background: #D4E6F1; color: #21618C; }
+
+.field select {
+  width: 100%;
+  padding: 0.7rem;
+  border: 1.5px solid var(--warm);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--white);
+}
+.field select:focus { outline: none; border-color: var(--mauve); }
 .product-actions {
   display: flex;
   flex-direction: column;
@@ -353,6 +368,16 @@ header .subtitle {
     <div class="field">
       <label>價格 (NT$) <span style="color:var(--red);">*</span></label>
       <input type="number" id="productPrice" min="0" placeholder="150" />
+    </div>
+
+    <div class="field">
+      <label>商品屬性（影響宅配運費）</label>
+      <select id="productType">
+        <option value="一般">一般（常溫）</option>
+        <option value="冷藏">冷藏</option>
+        <option value="冷凍">冷凍</option>
+      </select>
+      <div class="field-hint">宅配運費將依此屬性取最高費率收取（冷凍 &gt; 冷藏 &gt; 一般）</div>
     </div>
 
     <div class="field">
@@ -563,6 +588,8 @@ async function loadProducts() {
     const thumb = safeImg
       ? `<img src="${safeImg}" class="product-thumb" alt="" onerror="this.style.background='var(--warm)';this.removeAttribute('src');">`
       : `<div class="product-thumb"></div>`;
+    const pType = p.product_type || '一般';
+    const typeClass = pType === '冷凍' ? 'type-frozen' : (pType === '冷藏' ? 'type-cold' : 'type-normal');
     row.innerHTML = `
       ${thumb}
       <div class="product-info">
@@ -570,6 +597,7 @@ async function loadProducts() {
         <div class="product-meta">
           <span class="product-price">NT$${p.price}</span>
           <span class="product-tag ${p.available ? 'on' : 'off'}">${p.available ? '上架中' : '已下架'}</span>
+          <span class="product-tag ${typeClass}">${pType}</span>
           <span>ID: ${p.id}</span>
         </div>
       </div>
@@ -598,6 +626,7 @@ function startEdit(p) {
   document.getElementById('productDesc').value = p.description || '';
   document.getElementById('productPrice').value = p.price || '';
   document.getElementById('productImg').value = p.image_url || '';
+  document.getElementById('productType').value = p.product_type || '一般';
   document.getElementById('productAvailable').checked = !!p.available;
   show('btnCancelEdit');
   updateImgPreview();
@@ -613,6 +642,7 @@ function resetForm() {
   document.getElementById('productDesc').value = '';
   document.getElementById('productPrice').value = '';
   document.getElementById('productImg').value = '';
+  document.getElementById('productType').value = '一般';
   document.getElementById('productAvailable').checked = true;
   hide('btnCancelEdit');
   hide('imgPreview');
@@ -637,6 +667,7 @@ document.getElementById('btnSaveProduct').addEventListener('click', async () => 
     description: document.getElementById('productDesc').value.trim(),
     price: Number(price),
     image_url: document.getElementById('productImg').value.trim(),
+    product_type: document.getElementById('productType').value,
     available: document.getElementById('productAvailable').checked
   };
 
