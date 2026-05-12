@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+
+Sitemap: https://onepagegoimm-dev.github.io/ZiiZiiMoo/sitemap.xml
