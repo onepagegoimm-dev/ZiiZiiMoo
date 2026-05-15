@@ -253,15 +253,37 @@
     font-family: 'Zen Maru Gothic', sans-serif;
     font-size: 1.4rem; color: var(--mauve);
   }
-  .cart-total-bottom {
+  .cart-bottom-box {
     background: var(--warm);
     border-radius: 12px;
-    border-top: none;
     margin: 0.5rem 0 1rem;
     padding: 0.9rem 1.2rem;
   }
-  .cart-total-bottom .cart-total-label { font-weight: 500; color: var(--text); }
-  .cart-total-bottom .cart-total-amount { font-size: 1.6rem; }
+  .cart-bottom-box .cart-total-bottom-row {
+    padding: 0;
+    border-top: none;
+  }
+  .cart-bottom-box.with-detail .cart-total-bottom-row {
+    border-top: 1px dashed var(--blush);
+    padding-top: 0.6rem;
+    margin-top: 0.5rem;
+  }
+  .cart-bottom-box .cart-total-label { font-weight: 500; color: var(--text); }
+  .cart-bottom-box .cart-total-amount { font-size: 1.6rem; }
+  .cart-items-bottom .cart-item {
+    display: flex; justify-content: space-between;
+    padding: 0.35rem 0;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+  .cart-shipping-row-bottom {
+    border-top: 1px dashed var(--blush);
+    font-size: 0.85rem;
+    padding: 0.45rem 0 0.2rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+    display: flex; justify-content: space-between;
+  }
 
   /* ── 表單 ── */
   #order-form {
@@ -694,9 +716,17 @@
         <textarea class="form-textarea" id="f-note" placeholder="特殊需求、過敏資訊等…"></textarea>
       </div>
 
-      <div class="cart-total cart-total-bottom">
-        <span class="cart-total-label">總金額</span>
-        <span class="cart-total-amount">$<span class="cart-total-num">0</span></span>
+      <div class="cart-bottom-box">
+        <div class="cart-bottom-detail" style="display:none">
+          <div class="cart-items-bottom" id="cart-items-bottom"></div>
+          <div class="cart-sub-row cart-shipping-row-bottom" id="shipping-row-bottom" style="display:none">
+            <span id="shipping-label-bottom">運費</span><span>$<span id="cart-shipping-bottom">0</span></span>
+          </div>
+        </div>
+        <div class="cart-total cart-total-bottom-row">
+          <span class="cart-total-label">總金額</span>
+          <span class="cart-total-amount">$<span class="cart-total-num">0</span></span>
+        </div>
       </div>
 
       <div id="form-error" class="error-msg" style="display:none"></div>
@@ -923,25 +953,48 @@ function updateCart() {
   }
 
   document.getElementById('cart-count-badge').textContent = `${items.length} 項`;
-  list.innerHTML = items.map(i => `
+  const itemsHtml = items.map(i => `
     <div class="cart-item">
       <span class="cart-item-name">${i.name} × ${i.qty}</span>
       <span>$${i.price * i.qty}</span>
     </div>`).join('');
+  list.innerHTML = itemsHtml;
+  const bottomList = document.getElementById('cart-items-bottom');
+  if (bottomList) bottomList.innerHTML = itemsHtml;
 
   const shipFee = calcShipping(items, currentShippingMethod);
   const shipRow = document.getElementById('shipping-row');
+  const shipRowBottom = document.getElementById('shipping-row-bottom');
   if (currentShippingMethod) {
     shipRow.style.display = 'flex';
-    document.getElementById('shipping-label').textContent =
-      currentShippingMethod === '親取' ? '運費（親取）' : '運費（宅配）';
+    const shipLabel = currentShippingMethod === '親取' ? '運費（親取）' : '運費（宅配）';
+    document.getElementById('shipping-label').textContent = shipLabel;
     document.getElementById('cart-shipping').textContent = shipFee;
+    if (shipRowBottom) {
+      shipRowBottom.style.display = 'flex';
+      document.getElementById('shipping-label-bottom').textContent = shipLabel;
+      document.getElementById('cart-shipping-bottom').textContent = shipFee;
+    }
   } else {
     shipRow.style.display = 'none';
+    if (shipRowBottom) shipRowBottom.style.display = 'none';
   }
   document.querySelectorAll('.cart-total-num').forEach(el => {
     el.textContent = subtotal + shipFee;
   });
+
+  // 驗證後：隱藏上方購物車摘要，下方顯示完整明細
+  const bottomBox = document.querySelector('.cart-bottom-box');
+  const bottomDetail = document.querySelector('.cart-bottom-detail');
+  if (emailVerified) {
+    summary.style.display = 'none';
+    if (bottomBox) bottomBox.classList.add('with-detail');
+    if (bottomDetail) bottomDetail.style.display = '';
+  } else {
+    summary.style.display = '';
+    if (bottomBox) bottomBox.classList.remove('with-detail');
+    if (bottomDetail) bottomDetail.style.display = 'none';
+  }
 
   summary.classList.add('show');
   formSec.style.display = 'block';
@@ -1091,6 +1144,7 @@ function showVerified() {
   document.getElementById('verify-section').innerHTML =
     `<div class="verified-badge">✅ 已驗證：${verifiedEmail}</div>`;
   document.getElementById('order-form').classList.add('show');
+  updateCart();
 }
 
 // ── 送出訂單 → 導向綠界 ────────────────────────────────
