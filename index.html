@@ -253,6 +253,15 @@
     font-family: 'Zen Maru Gothic', sans-serif;
     font-size: 1.4rem; color: var(--mauve);
   }
+  .cart-total-bottom {
+    background: var(--warm);
+    border-radius: 12px;
+    border-top: none;
+    margin: 0.5rem 0 1rem;
+    padding: 0.9rem 1.2rem;
+  }
+  .cart-total-bottom .cart-total-label { font-weight: 500; color: var(--text); }
+  .cart-total-bottom .cart-total-amount { font-size: 1.6rem; }
 
   /* ── 表單 ── */
   #order-form {
@@ -563,15 +572,12 @@
       <span id="cart-count-badge"></span>
     </div>
     <div class="cart-items" id="cart-items-list"></div>
-    <div class="cart-sub-row">
-      <span>小計</span><span>$<span id="cart-subtotal">0</span></span>
-    </div>
     <div class="cart-sub-row" id="shipping-row" style="display:none">
       <span id="shipping-label">運費</span><span>$<span id="cart-shipping">0</span></span>
     </div>
     <div class="cart-total">
-      <span class="cart-total-label">應付金額</span>
-      <span class="cart-total-amount">$<span id="cart-total-num">0</span></span>
+      <span class="cart-total-label">總金額</span>
+      <span class="cart-total-amount">$<span class="cart-total-num">0</span></span>
     </div>
   </div>
 
@@ -686,6 +692,11 @@
       <div class="form-group">
         <label class="form-label">備註</label>
         <textarea class="form-textarea" id="f-note" placeholder="特殊需求、過敏資訊等…"></textarea>
+      </div>
+
+      <div class="cart-total cart-total-bottom">
+        <span class="cart-total-label">總金額</span>
+        <span class="cart-total-amount">$<span class="cart-total-num">0</span></span>
       </div>
 
       <div id="form-error" class="error-msg" style="display:none"></div>
@@ -917,7 +928,6 @@ function updateCart() {
       <span class="cart-item-name">${i.name} × ${i.qty}</span>
       <span>$${i.price * i.qty}</span>
     </div>`).join('');
-  document.getElementById('cart-subtotal').textContent = subtotal;
 
   const shipFee = calcShipping(items, currentShippingMethod);
   const shipRow = document.getElementById('shipping-row');
@@ -929,7 +939,9 @@ function updateCart() {
   } else {
     shipRow.style.display = 'none';
   }
-  document.getElementById('cart-total-num').textContent = subtotal + shipFee;
+  document.querySelectorAll('.cart-total-num').forEach(el => {
+    el.textContent = subtotal + shipFee;
+  });
 
   summary.classList.add('show');
   formSec.style.display = 'block';
